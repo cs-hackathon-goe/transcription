@@ -9,6 +9,7 @@ import subprocess
 from waitingspinnerwidget import QtWaitingSpinner
 from time import sleep
 import threading
+import os 
 
 
 class MainWindow(QDialog):
@@ -48,7 +49,10 @@ class MainWindow(QDialog):
         self.filename = QFileDialog.getOpenFileName(self, "Select Lecture" )
         self.filepath = self.filename
         self.selectedFile.setText(self.filepath[0])
+        filename = self.filepath[0].split("/")
+        self.file = filename[-1]  
 
+        
         
     
     #Main Transcription Process
@@ -61,12 +65,12 @@ class MainWindow(QDialog):
         self.process.start('whisper', [self.filepath[0], '--model',  'base', '--language' ,language, '--output_format',  'vtt', '--task', 'transcribe'])
         self.transcriptBox.append(str("---Transcript Start---\n"))
         print('whisper ' + self.filepath[0] + " --model base --language '" + language +  "' --output_format vtt --task transcribe")
-        #self.label_finished.show()
-          
-
+        
     
     def transcriptFinished(self):
         self.transcriptBox.append(str("---Transcript End---"))
+        subprocess.run("ffmpeg -i " + self.file +" -i " + self.file[:-4] + ".vtt -c copy -c:s mov_text -metadata:s:s:0 language=eng " + self.file[:-4] + "_subtitled.mp4")
+        print("ffmpeg -i " + self.file +" -i " + self.file[:-4] + ".vtt -c copy -c:s mov_text -metadata:s:s:0 language=eng " + self.file[:-4] + "_subtitled.mp4")
         self.spinner.stop()
     
     # TODO Remove Later
