@@ -69,6 +69,7 @@ class MainWindow(QDialog):
     
     def transcriptFinished(self):
         self.transcriptBox.append(str("---Transcript End---"))
+        #self.process.start('ffmpeg', ["-i", self.file, "-i", self.file[:-4], ".vtt", "-c", "copy, "-c:s", "mov_text", "-metadata:s:s:0", "language=eng", self.file[:-4] + "_subtitled.mp4" ])
         subprocess.run("ffmpeg -i " + self.file +" -i " + self.file[:-4] + ".vtt -c copy -c:s mov_text -metadata:s:s:0 language=eng " + self.file[:-4] + "_subtitled.mp4")
         print("ffmpeg -i " + self.file +" -i " + self.file[:-4] + ".vtt -c copy -c:s mov_text -metadata:s:s:0 language=eng " + self.file[:-4] + "_subtitled.mp4")
         self.spinner.stop()
